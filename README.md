@@ -9,6 +9,8 @@
 > **Live Web App**: [https://shadow-of-truth.vercel.app/](https://shadow-of-truth.vercel.app/)  
 > **Source Repository**: [https://github.com/v0rade/SHADOW-OF-TRUTH](https://github.com/v0rade/SHADOW-OF-TRUTH)
 
+![Gameplay Demo Showcase](shadows_of_truth_demo.gif)
+
 ---
 
 ## 📖 Deskripsi Permainan (Game Overview)
