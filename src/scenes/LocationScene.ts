@@ -134,7 +134,16 @@ export class LocationScene extends Phaser.Scene {
 
     if (item.type === 'door') {
       const targetLocationId = item.id;
-      const canChange = state.changeLocation(targetLocationId);
+      let arrivalX = 180;
+      if (item.x < 300) {
+        // Exited through a left door -> arrive on the right side of the destination
+        arrivalX = 680;
+      } else {
+        // Exited through a right door -> arrive on the left side of the destination
+        arrivalX = 180;
+      }
+
+      const canChange = state.changeLocation(targetLocationId, { x: arrivalX, y: 440 });
       if (canChange) {
         this.scene.restart({ locationId: targetLocationId });
       } else {

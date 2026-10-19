@@ -73,7 +73,7 @@ export const CASE_01: CaseDefinition = {
         {
           id: 'inspect_door_latch',
           name: 'Front Door Deadbolt',
-          x: 120,
+          x: 190,
           y: 400,
           width: 60,
           height: 100,
@@ -165,7 +165,7 @@ export const CASE_01: CaseDefinition = {
       ],
       doors: [
         {
-          x: 60,
+          x: 80,
           y: 420,
           targetLocationId: 'loc_office',
           prompt: 'Return to Detective Office'
