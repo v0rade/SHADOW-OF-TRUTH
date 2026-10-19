@@ -42,6 +42,11 @@ export class HUD {
 
     this.bindEvents();
     this.update();
+    this.setVisible(false);
+  }
+
+  public setVisible(visible: boolean): void {
+    this.container.style.display = visible ? 'flex' : 'none';
   }
 
   private bindEvents(): void {

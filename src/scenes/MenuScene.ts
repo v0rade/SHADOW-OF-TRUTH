@@ -86,11 +86,15 @@ export class MenuScene extends Phaser.Scene {
     }
 
     // Controls text at bottom
-    this.add.text(width / 2, height - 35, '[A/D or Arrows] Move  |  [W] Doors  |  [E] Inspect  |  [Tab] Notebook  |  [B] Murder Board', {
+    this.add.text(width / 2, height - 35, '[Click Button or Press ENTER / SPACE to Start]', {
       fontFamily: '"Courier New", monospace',
-      fontSize: '11px',
-      color: '#657383'
+      fontSize: '12px',
+      color: '#c4a77d'
     }).setOrigin(0.5);
+
+    // Keyboard shortcuts to start
+    this.input.keyboard?.on('keydown-ENTER', () => this.startGame(false));
+    this.input.keyboard?.on('keydown-SPACE', () => this.startGame(false));
   }
 
   private createMenuButton(x: number, y: number, text: string, callback: () => void): Phaser.GameObjects.Container {
@@ -111,7 +115,11 @@ export class MenuScene extends Phaser.Scene {
 
     container.add([bg, label]);
     container.setSize(280, 36);
-    container.setInteractive({ useHandCursor: true });
+    container.setInteractive(
+      new Phaser.Geom.Rectangle(-140, -18, 280, 36),
+      Phaser.Geom.Rectangle.Contains
+    );
+    this.input.setDefaultCursor('pointer');
 
     container.on('pointerover', () => {
       bg.clear();

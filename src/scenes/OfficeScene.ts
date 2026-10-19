@@ -2,7 +2,7 @@ import { LocationScene } from './LocationScene';
 
 export class OfficeScene extends LocationScene {
   constructor() {
-    super();
+    super('OfficeScene');
   }
 
   public override init(): void {

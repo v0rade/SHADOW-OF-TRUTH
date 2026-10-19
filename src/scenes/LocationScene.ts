@@ -20,8 +20,8 @@ export class LocationScene extends Phaser.Scene {
   public static onOpenSettings?: () => void;
   public static onUpdateHud?: () => void;
 
-  constructor() {
-    super('LocationScene');
+  constructor(key: string = 'LocationScene') {
+    super(key);
   }
 
   public init(data: { locationId?: string }): void {

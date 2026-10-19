@@ -2,7 +2,7 @@ import { LocationScene } from './LocationScene';
 
 export class CrimeScene extends LocationScene {
   constructor() {
-    super();
+    super('CrimeScene');
   }
 
   public override init(): void {

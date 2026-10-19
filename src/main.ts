@@ -53,8 +53,10 @@ function initApp(): void {
 
   LocationScene.onOpenNotebook = () => notebookUI.toggle();
   LocationScene.onOpenBoard = () => boardUI.toggle();
-  LocationScene.onOpenSettings = () => settingsUI.toggle();
-  LocationScene.onUpdateHud = () => hud.update();
+  LocationScene.onUpdateHud = () => {
+    hud.setVisible(true);
+    hud.update();
+  };
 
   dialogueUI.setOnDialogueEnd(() => {
     // Unlock player movement in scene
