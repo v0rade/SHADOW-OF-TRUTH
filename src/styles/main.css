@@ -1,0 +1,762 @@
+/* ============================================================
+   SHADOWS OF TRUTH - NOIR DETECTIVE MYSTERY STYLESHEET
+   ============================================================ */
+
+:root {
+  --bg-dark: #0a0c10;
+  --bg-panel: rgba(16, 20, 26, 0.94);
+  --bg-card: rgba(24, 30, 40, 0.9);
+  --border-gold: #c4a77d;
+  --border-dim: #3a4556;
+  --text-parchment: #f0e8dc;
+  --text-muted: #9aa5b5;
+  --accent-gold: #d4af37;
+  --accent-crimson: #a62a2a;
+  --accent-cyan: #4a9eb5;
+  --shadow-noir: 0 10px 30px rgba(0, 0, 0, 0.85);
+  --font-typewriter: "Courier New", Courier, monospace;
+  --font-serif: "Georgia", "Times New Roman", serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-parchment);
+  font-family: var(--font-typewriter);
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#app {
+  position: relative;
+  width: 960px;
+  height: 540px;
+  background: #000;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.9), 0 0 0 2px var(--border-gold);
+  overflow: hidden;
+}
+
+#phaser-canvas-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* Rain / Vignette Overlay */
+.vignette-overlay {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 50%, rgba(5,7,10,0.75) 100%);
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.8);
+  z-index: 5;
+}
+
+/* ============================================================
+   HUD TOP BAR
+   ============================================================ */
+#game-hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 44px;
+  background: linear-gradient(180deg, rgba(8, 10, 14, 0.92) 0%, rgba(8, 10, 14, 0.7) 80%, transparent 100%);
+  border-bottom: 1px solid rgba(196, 167, 125, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 20;
+}
+
+.hud-location-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+}
+
+.hud-location-badge .loc-icon {
+  font-size: 15px;
+}
+
+.hud-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hud-btn {
+  background: rgba(22, 28, 38, 0.85);
+  color: var(--text-parchment);
+  border: 1px solid var(--border-dim);
+  padding: 5px 12px;
+  font-family: var(--font-typewriter);
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hud-btn:hover {
+  border-color: var(--border-gold);
+  background: rgba(35, 45, 60, 0.95);
+  color: var(--accent-gold);
+  transform: translateY(-1px);
+}
+
+.hud-btn.accent-accuse {
+  border-color: var(--accent-crimson);
+  background: rgba(60, 18, 24, 0.85);
+  color: #ff9999;
+}
+
+.hud-btn.accent-accuse:hover {
+  background: rgba(90, 25, 32, 0.95);
+  color: #ffffff;
+  border-color: #ff4d4d;
+}
+
+/* ============================================================
+   GENERIC MODAL WRAPPER
+   ============================================================ */
+.noir-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(5, 7, 10, 0.82);
+  backdrop-filter: blur(4px);
+  z-index: 50;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.noir-modal.active {
+  display: flex;
+  opacity: 1;
+}
+
+.modal-frame {
+  width: 860px;
+  height: 480px;
+  background: var(--bg-panel);
+  border: 2px solid var(--border-gold);
+  box-shadow: var(--shadow-noir);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-radius: 4px;
+}
+
+.modal-header {
+  height: 42px;
+  background: rgba(10, 13, 18, 0.9);
+  border-bottom: 1px solid var(--border-gold);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.modal-title {
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+
+.modal-close-btn:hover {
+  color: var(--accent-crimson);
+}
+
+/* ============================================================
+   DETECTIVE NOTEBOOK TABS & LAYOUT
+   ============================================================ */
+.notebook-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.notebook-tabs-sidebar {
+  width: 180px;
+  background: rgba(12, 16, 22, 0.95);
+  border-right: 1px solid var(--border-dim);
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+}
+
+.notebook-tab-btn {
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  color: var(--text-muted);
+  font-family: var(--font-typewriter);
+  font-size: 11px;
+  text-align: left;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notebook-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-parchment);
+}
+
+.notebook-tab-btn.active {
+  background: rgba(196, 167, 125, 0.1);
+  color: var(--accent-gold);
+  border-left-color: var(--accent-gold);
+  font-weight: bold;
+}
+
+.notebook-content-view {
+  flex: 1;
+  padding: 16px 20px;
+  overflow-y: auto;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.notebook-content-view::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notebook-content-view::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.notebook-content-view::-webkit-scrollbar-thumb {
+  background: var(--border-gold);
+  border-radius: 3px;
+}
+
+/* Case Summary View */
+.summary-header {
+  border-bottom: 1px solid var(--border-dim);
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+
+.summary-title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  color: var(--accent-gold);
+  margin-bottom: 4px;
+}
+
+.summary-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.objective-item {
+  background: var(--bg-card);
+  border-left: 3px solid var(--border-dim);
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-radius: 2px;
+}
+
+.objective-item.completed {
+  border-left-color: #48bb78;
+  opacity: 0.85;
+}
+
+.objective-item.completed .obj-status {
+  color: #48bb78;
+}
+
+/* Evidence Grid */
+.evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.evidence-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-dim);
+  padding: 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.evidence-card:hover {
+  border-color: var(--border-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.evidence-card .ev-name {
+  font-weight: bold;
+  font-size: 12px;
+  color: var(--accent-gold);
+}
+
+.evidence-card .ev-category {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+/* Suspects View */
+.suspects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.suspect-profile-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-dim);
+  padding: 12px;
+  display: flex;
+  gap: 16px;
+  border-radius: 3px;
+}
+
+.suspect-avatar-box {
+  width: 72px;
+  height: 72px;
+  border: 1px solid var(--border-gold);
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.suspect-info {
+  flex: 1;
+}
+
+.suspect-name {
+  font-size: 15px;
+  color: var(--accent-gold);
+  font-weight: bold;
+}
+
+.suspect-title {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+/* Timeline View */
+.timeline-track {
+  position: relative;
+  border-left: 2px solid var(--border-gold);
+  margin-left: 70px;
+  padding-left: 20px;
+}
+
+.timeline-event-item {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.timeline-event-item::before {
+  content: '';
+  position: absolute;
+  left: -26px;
+  top: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-gold);
+  border: 2px solid #000;
+}
+
+.timeline-event-item.contradicted::before {
+  background: var(--accent-crimson);
+}
+
+.timeline-event-item .tl-time {
+  position: absolute;
+  left: -90px;
+  top: 0;
+  font-size: 10px;
+  font-weight: bold;
+  color: var(--accent-gold);
+  width: 60px;
+  text-align: right;
+}
+
+.timeline-event-item .tl-title {
+  font-weight: bold;
+  font-size: 12px;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.timeline-event-item .tl-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.timeline-event-item.contradicted .tl-title {
+  color: #ff9999;
+  text-decoration: line-through;
+}
+
+/* ============================================================
+   DIALOGUE & INTERROGATION UI
+   ============================================================ */
+#dialogue-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 220px;
+  background: linear-gradient(0deg, rgba(8, 10, 14, 0.98) 0%, rgba(14, 18, 24, 0.94) 80%, transparent 100%);
+  border-top: 2px solid var(--border-gold);
+  z-index: 40;
+  display: none;
+  padding: 14px 20px;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.8);
+}
+
+#dialogue-overlay.active {
+  display: flex;
+  gap: 20px;
+}
+
+.dialogue-portrait-box {
+  width: 96px;
+  height: 96px;
+  border: 2px solid var(--border-gold);
+  background: #0d1117;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
+}
+
+.dialogue-portrait-box img,
+.dialogue-portrait-box canvas {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.dialogue-content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.dialogue-speaker-name {
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.dialogue-text-body {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-parchment);
+  min-height: 48px;
+}
+
+.dialogue-action-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.dialogue-choices-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 85px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.dialogue-choice-btn {
+  background: rgba(25, 32, 44, 0.85);
+  border: 1px solid var(--border-dim);
+  color: var(--text-parchment);
+  font-family: var(--font-typewriter);
+  font-size: 11px;
+  text-align: left;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s ease;
+}
+
+.dialogue-choice-btn:hover {
+  background: rgba(45, 58, 78, 0.95);
+  border-color: var(--border-gold);
+  color: var(--accent-gold);
+}
+
+.dialogue-util-buttons {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.present-evidence-btn {
+  background: rgba(140, 35, 35, 0.85);
+  border: 1px solid #ff6666;
+  color: #fff;
+  font-family: var(--font-typewriter);
+  font-size: 11px;
+  font-weight: bold;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.present-evidence-btn:hover {
+  background: rgba(180, 45, 45, 0.95);
+  box-shadow: 0 0 10px rgba(255, 100, 100, 0.5);
+}
+
+/* ============================================================
+   INVESTIGATION BOARD UI
+   ============================================================ */
+#investigation-board-modal .modal-frame {
+  width: 900px;
+  height: 500px;
+  background: #191410; /* Corkboard tone */
+  border-color: #8b6834;
+}
+
+.corkboard-canvas-area {
+  position: relative;
+  flex: 1;
+  background: radial-gradient(circle, #2d2319 0%, #15100b 100%);
+  overflow: hidden;
+}
+
+.board-clue-card {
+  position: absolute;
+  width: 140px;
+  height: 75px;
+  background: #faf4e8;
+  color: #1a1a1a;
+  border: 1px solid #b59e7a;
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.6);
+  padding: 6px 8px;
+  border-radius: 2px;
+  cursor: grab;
+  font-size: 10px;
+  font-family: var(--font-typewriter);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform-origin: center;
+}
+
+.board-clue-card .pin {
+  width: 8px;
+  height: 8px;
+  background: #c82333;
+  border-radius: 50%;
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.board-clue-card.selected {
+  outline: 2px solid #e63946;
+  box-shadow: 0 0 12px rgba(230, 57, 70, 0.8);
+}
+
+.board-bottom-bar {
+  height: 48px;
+  background: #0f0d0a;
+  border-top: 1px solid #8b6834;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  font-size: 11px;
+}
+
+/* ============================================================
+   ACCUSATION SCREEN
+   ============================================================ */
+.accusation-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.accusation-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-dim);
+  padding: 12px;
+  border-radius: 3px;
+}
+
+.accusation-section-title {
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.accusation-select {
+  width: 100%;
+  background: #0d1117;
+  color: var(--text-parchment);
+  border: 1px solid var(--border-gold);
+  padding: 8px;
+  font-family: var(--font-typewriter);
+  font-size: 12px;
+  border-radius: 2px;
+}
+
+.accusation-evidence-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+.accusation-check-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.accusation-submit-bar {
+  padding: 12px 16px;
+  background: rgba(10, 14, 20, 0.95);
+  border-top: 1px solid var(--border-gold);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Results Screen */
+.results-container {
+  padding: 24px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 12px;
+  overflow-y: auto;
+}
+
+.results-rank-banner {
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: var(--accent-gold);
+  font-family: var(--font-serif);
+}
+
+.results-score-badge {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.results-epilogue-box {
+  background: rgba(0, 0, 0, 0.4);
+  border-left: 3px solid var(--border-gold);
+  padding: 14px;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* Toast Notification */
+#game-toast {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  background: rgba(14, 18, 26, 0.96);
+  border: 1px solid var(--border-gold);
+  padding: 10px 16px;
+  border-radius: 3px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8);
+  font-size: 12px;
+  color: var(--accent-gold);
+  z-index: 100;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+#game-toast.show {
+  display: block;
+  opacity: 1;
+}
